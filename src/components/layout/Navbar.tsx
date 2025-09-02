@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Menu, X, Truck, BarChart3, Shield, Zap } from 'lucide-react'
+import { Menu, X, Truck } from 'lucide-react'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -23,31 +23,7 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link 
-              to="/" 
-              className={`text-sm font-medium transition-colors ${
-                isActive('/') ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Home
-            </Link>
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <BarChart3 className="w-4 h-4" />
-              <span>Analytics</span>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Shield className="w-4 h-4" />
-              <span>Security</span>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Zap className="w-4 h-4" />
-              <span>Integration</span>
-            </div>
-          </div>
-
-          {/* Auth Buttons */}
+          {/* Auth Buttons - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
             <Link to="/login">
               <Button variant="ghost" size="sm">
@@ -77,22 +53,6 @@ export default function Navbar() {
       {isOpen && (
         <div className="md:hidden glass-card border-t border-white/10">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link
-              to="/"
-              className="block px-3 py-2 text-base font-medium text-muted-foreground hover:text-foreground"
-              onClick={() => setIsOpen(false)}
-            >
-              Home
-            </Link>
-            <div className="px-3 py-2 text-base font-medium text-muted-foreground">
-              Analytics
-            </div>
-            <div className="px-3 py-2 text-base font-medium text-muted-foreground">
-              Security
-            </div>
-            <div className="px-3 py-2 text-base font-medium text-muted-foreground">
-              Integration
-            </div>
             <div className="px-3 py-2 space-y-2">
               <Link to="/login" onClick={() => setIsOpen(false)}>
                 <Button variant="ghost" size="sm" className="w-full">

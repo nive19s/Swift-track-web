@@ -1,35 +1,20 @@
 import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import CreateOrderModal from '@/components/orders/CreateOrderModal'
 import OrdersTable from '@/components/orders/OrdersTable'
 import { 
   Truck, 
   Package, 
-  MapPin, 
-  BarChart3, 
   Bell, 
-  Settings,
   Plus,
-  Search,
-  Filter,
-  Download,
-  RefreshCw,
-  Calendar,
-  DollarSign,
-  TrendingUp,
-  Clock,
-  AlertCircle,
-  CheckCircle,
   User,
   LogOut
 } from 'lucide-react'
 
 export default function Dashboard() {
-  const [selectedTab, setSelectedTab] = useState("overview")
+  const navigate = useNavigate()
+  const [selectedTab, setSelectedTab] = useState("orders")
   const [createOrderOpen, setCreateOrderOpen] = useState(false)
   const [orders, setOrders] = useState([
     {
@@ -64,38 +49,6 @@ export default function Dashboard() {
     }
   ])
 
-  // Mock data
-  const stats = [
-    {
-      title: "Active Orders",
-      value: "1,247",
-      change: "+12.5%",
-      icon: <Package className="w-6 h-6" />,
-      trend: "up"
-    },
-    {
-      title: "In Transit",
-      value: "847",
-      change: "+8.2%",
-      icon: <Truck className="w-6 h-6" />,
-      trend: "up"
-    },
-    {
-      title: "Delivered Today",
-      value: "342",
-      change: "+15.3%",
-      icon: <CheckCircle className="w-6 h-6" />,
-      trend: "up"
-    },
-    {
-      title: "Monthly Revenue",
-      value: "$45,231",
-      change: "+7.4%",
-      icon: <DollarSign className="w-6 h-6" />,
-      trend: "up"
-    }
-  ]
-
   const handleCreateOrder = (newOrder: any) => {
     setOrders(prev => [newOrder, ...prev])
   }
@@ -103,25 +56,6 @@ export default function Dashboard() {
   const handleOrderView = (order: any) => {
     console.log('View order:', order)
     // TODO: Implement order detail modal
-  }
-
-  const recentOrders = orders.slice(0, 3).map(order => ({
-    id: order.id,
-    customer: order.customerName,
-    status: order.status,
-    destination: order.destination,
-    value: `$${order.estimatedValue.toFixed(2)}`,
-    date: new Date(order.createdAt).toISOString().split('T')[0]
-  }))
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Processing": return "bg-warning text-warning-foreground"
-      case "In Transit": return "bg-primary text-primary-foreground"
-      case "Delivered": return "bg-success text-success-foreground"
-      case "Delayed": return "bg-destructive text-destructive-foreground"
-      default: return "bg-muted text-muted-foreground"
-    }
   }
 
   const [notificationsOpen, setNotificationsOpen] = useState(false)
@@ -152,6 +86,14 @@ export default function Dashboard() {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [notificationsOpen])
+
+  const handleProfileClick = () => {
+    navigate('/profile')
+  }
+
+  const handleLogout = () => {
+    navigate('/')
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -198,7 +140,7 @@ export default function Dashboard() {
               variant="ghost"
               size="sm"
               type="button"
-              onClick={() => setSelectedTab("profile")}
+              onClick={handleProfileClick}
             >
               <User className="w-4 h-4 mr-2" />
               Profile
@@ -207,7 +149,7 @@ export default function Dashboard() {
               variant="ghost"
               size="sm"
               type="button"
-              onClick={() => window.location.assign('/')}
+              onClick={handleLogout}
             >
               <LogOut className="w-4 h-4 mr-2" />
               Logout
@@ -216,240 +158,26 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-64 border-r border-border bg-card/30 min-h-screen">
-          <nav className="p-4 space-y-2">
-            <Button 
-              variant={selectedTab === "overview" ? "default" : "ghost"} 
-              className="w-full justify-start"
-              onClick={() => setSelectedTab("overview")}
-            >
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Overview
-            </Button>
-            <Button 
-              variant={selectedTab === "orders" ? "default" : "ghost"} 
-              className="w-full justify-start"
-              onClick={() => setSelectedTab("orders")}
-            >
-              <Package className="w-4 h-4 mr-2" />
-              Orders
-            </Button>
-            <Button 
-              variant={selectedTab === "profile" ? "default" : "ghost"} 
-              className="w-full justify-start"
-              onClick={() => setSelectedTab("profile")}
-            >
-              <User className="w-4 h-4 mr-2" />
-              Profile
-            </Button>
-          </nav>
-        </aside>
-
+      <div className="flex-1">
         {/* Main Content */}
-        <main className="flex-1 p-6">
-          <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-            {/* Overview Tab */}
-            <TabsContent value="overview" className="space-y-6">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h1 className="text-3xl font-bold text-foreground">Dashboard Overview</h1>
-                  <p className="text-muted-foreground">Welcome back! Here's what's happening with your logistics.</p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Button variant="outline" size="sm">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Last 30 days
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Refresh
-                  </Button>
-                </div>
-              </div>
+        <main className="p-6">
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h1 className="text-3xl font-bold text-foreground">Order Management</h1>
+              <Button 
+                variant="gradient"
+                onClick={() => setCreateOrderOpen(true)}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                New Order
+              </Button>
+            </div>
 
-              {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, index) => (
-                  <Card key={index} className="hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-2">
-                          <p className="text-sm text-muted-foreground">{stat.title}</p>
-                          <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                          <p className="text-sm text-success">
-                            {stat.change} from last month
-                          </p>
-                        </div>
-                        <div className="gradient-primary w-12 h-12 rounded-lg flex items-center justify-center text-white">
-                          {stat.icon}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {/* Recent Activity */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Recent Orders</CardTitle>
-                    <CardDescription>Latest order activity</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {recentOrders.map((order, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                          <div className="space-y-1">
-                            <p className="font-medium text-sm">{order.id}</p>
-                            <p className="text-sm text-muted-foreground">{order.customer}</p>
-                            <p className="text-xs text-muted-foreground">{order.destination}</p>
-                          </div>
-                          <div className="text-right space-y-1">
-                            <Badge className={getStatusColor(order.status)}>
-                              {order.status}
-                            </Badge>
-                            <p className="text-sm font-medium">{order.value}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Quick Actions</CardTitle>
-                    <CardDescription>Common tasks and shortcuts</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-start"
-                      onClick={() => setCreateOrderOpen(true)}
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create New Order
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Search className="w-4 h-4 mr-2" />
-                      Track Shipment
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Download className="w-4 h-4 mr-2" />
-                      Download Report
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Account Settings
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Performance Metrics */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Performance Metrics</CardTitle>
-                  <CardDescription>Key performance indicators</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Delivery Success Rate</span>
-                        <span className="text-sm font-medium">98.5%</span>
-                      </div>
-                      <Progress value={98.5} className="h-2" />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">On-Time Delivery</span>
-                        <span className="text-sm font-medium">95.2%</span>
-                      </div>
-                      <Progress value={95.2} className="h-2" />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Customer Satisfaction</span>
-                        <span className="text-sm font-medium">96.8%</span>
-                      </div>
-                      <Progress value={96.8} className="h-2" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Orders Tab */}
-            <TabsContent value="orders" className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-foreground">Order Management</h1>
-                <Button 
-                  variant="gradient"
-                  onClick={() => setCreateOrderOpen(true)}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Order
-                </Button>
-              </div>
-
-              <OrdersTable 
-                orders={orders}
-                onOrderView={handleOrderView}
-              />
-            </TabsContent>
-
-            {/* Profile Tab */}
-            <TabsContent value="profile" className="space-y-6">
-              <div className="flex flex-col items-center justify-center min-h-[60vh]">
-                <div className="bg-card rounded-lg shadow-lg p-8 w-full max-w-lg">
-                  <h1 className="text-3xl font-bold mb-6 text-foreground">Company Profile</h1>
-                  <div className="space-y-4 mb-6">
-                    <div>
-                      <span className="block text-sm text-muted-foreground">Company Name</span>
-                      <span className="block text-lg font-semibold text-foreground">TechStore Ltd</span>
-                    </div>
-                    <div>
-                      <span className="block text-sm text-muted-foreground">Contact Person</span>
-                      <span className="block text-lg font-semibold text-foreground">John Doe</span>
-                    </div>
-                    <div>
-                      <span className="block text-sm text-muted-foreground">Email</span>
-                      <span className="block text-lg font-semibold text-foreground">contact@techstore.com</span>
-                    </div>
-                    <div>
-                      <span className="block text-sm text-muted-foreground">Phone</span>
-                      <span className="block text-lg font-semibold text-foreground">+94 77 123 4567</span>
-                    </div>
-                    <div>
-                      <span className="block text-sm text-muted-foreground">Business Address</span>
-                      <span className="block text-lg font-semibold text-foreground">123, Main Street, Colombo, Sri Lanka</span>
-                    </div>
-                    <div>
-                      <span className="block text-sm text-muted-foreground">Account Type</span>
-                      <span className="block text-lg font-semibold text-foreground">E-Commerce Retailer</span>
-                    </div>
-                    <div>
-                      <span className="block text-sm text-muted-foreground">Registered Since</span>
-                      <span className="block text-lg font-semibold text-foreground">Jan 2024</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-3">
-                    <Button variant="default" disabled>
-                      Edit Profile
-                    </Button>
-                    <Button variant="outline" onClick={() => setSelectedTab("overview")}>
-                      Back to Dashboard
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-          </Tabs>
+            <OrdersTable 
+              orders={orders}
+              onOrderView={handleOrderView}
+            />
+          </div>
         </main>
       </div>
 

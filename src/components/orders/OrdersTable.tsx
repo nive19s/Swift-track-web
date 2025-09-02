@@ -8,12 +8,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { 
   Search, 
   Filter, 
-  Download, 
-  Eye, 
   MapPin, 
   Calendar,
   Package,
-  Truck,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react'
@@ -27,6 +24,7 @@ interface Order {
   createdAt: string
   priority?: string
   items?: any[]
+  paymentStatus?: 'paid' | 'unpaid' | 'pending'
 }
 
 interface OrdersTableProps {
@@ -56,6 +54,15 @@ export default function OrdersTable({ orders, onOrderView }: OrdersTableProps) {
       case "urgent": return "bg-destructive text-destructive-foreground"
       case "express": return "bg-warning text-warning-foreground"
       case "standard": return "bg-muted text-muted-foreground"
+      default: return "bg-muted text-muted-foreground"
+    }
+  }
+
+  const getPaymentStatusColor = (paymentStatus: string) => {
+    switch (paymentStatus) {
+      case "paid": return "bg-success text-success-foreground"
+      case "unpaid": return "bg-destructive text-destructive-foreground"
+      case "pending": return "bg-warning text-warning-foreground"
       default: return "bg-muted text-muted-foreground"
     }
   }
@@ -106,10 +113,6 @@ export default function OrdersTable({ orders, onOrderView }: OrdersTableProps) {
               <SelectItem value="Cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" className="w-full sm:w-auto">
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
         </div>
 
         {/* Orders Table */}
@@ -119,12 +122,12 @@ export default function OrdersTable({ orders, onOrderView }: OrdersTableProps) {
               <TableRow className="bg-muted/50">
                 <TableHead>Order ID</TableHead>
                 <TableHead>Customer</TableHead>
-                <TableHead>Status</TableHead>
                 <TableHead>Destination</TableHead>
                 <TableHead>Priority</TableHead>
                 <TableHead>Value</TableHead>
                 <TableHead>Date</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>Payment</TableHead>
+                <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -142,11 +145,6 @@ export default function OrdersTable({ orders, onOrderView }: OrdersTableProps) {
                         </div>
                       )}
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge className={getStatusColor(order.status)}>
-                      {order.status}
-                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
@@ -171,18 +169,15 @@ export default function OrdersTable({ orders, onOrderView }: OrdersTableProps) {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onOrderView?.(order)}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Truck className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    <Badge className={getPaymentStatusColor(order.paymentStatus || 'unpaid')}>
+                      {order.paymentStatus === 'paid' ? 'Paid' : 
+                       order.paymentStatus === 'pending' ? 'Pending' : 'Unpaid'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={getStatusColor(order.status)}>
+                      {order.status}
+                    </Badge>
                   </TableCell>
                 </TableRow>
               ))}
